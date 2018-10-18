@@ -1,0 +1,45 @@
+﻿<Properties StartupConfiguration="{FE28951E-8BC2-7A47-E1E9-F74B0C798A09}|">
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/HideMap.cs">
+    <Files>
+      <File FileName="Assets/Scripts/ARMessageProvider.cs" Line="18" Column="6" />
+      <File FileName="Assets/Scripts/DeviceAuthentication.cs" Line="33" Column="20" />
+      <File FileName="Assets/MapboxAR/Unity/Ar/SimpleAutomaticSynchronizationContextBehaviour.cs" Line="88" Column="1" />
+      <File FileName="Assets/Scripts/UIBehavior.cs" Line="58" Column="106" />
+      <File FileName="Assets/Scripts/MessageService.cs" Line="67" Column="63" />
+      <File FileName="Assets/UnityARInterface/Scripts/ARCoreInterface.cs" Line="418" Column="28" />
+      <File FileName="Assets/GameSparks/Platforms/PlatformBase.cs" Line="259" Column="8" />
+      <File FileName="Assets/Scripts/HideMap.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="MapBoxExample" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="GameSparks" expanded="True">
+                <Node name="Platforms" expanded="True" />
+              </Node>
+              <Node name="MapboxAR" expanded="True">
+                <Node name="Unity" expanded="True">
+                  <Node name="Ar" expanded="True" />
+                </Node>
+              </Node>
+              <Node name="Scripts" expanded="True">
+                <Node name="HideMap.cs" selected="True" />
+              </Node>
+              <Node name="UnityARInterface" expanded="True">
+                <Node name="Scripts" expanded="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
