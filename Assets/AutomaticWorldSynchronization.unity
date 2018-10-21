@@ -838,6 +838,11 @@ Prefab:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 114673356928061534, guid: 35e76f6e52f5c4252a0b703cc2019a37,
+        type: 2}
+      propertyPath: _options.locationOptions.zoom
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114892264240900376, guid: 35e76f6e52f5c4252a0b703cc2019a37, type: 2}
     - {fileID: 114445513930812180, guid: 35e76f6e52f5c4252a0b703cc2019a37, type: 2}
@@ -1160,7 +1165,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1242951321969780, guid: 67597a1e442b246869f416a1b5272850, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67597a1e442b246869f416a1b5272850, type: 2}

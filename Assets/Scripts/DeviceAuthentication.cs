@@ -6,13 +6,17 @@
 
     public class DeviceAuthentication : MonoBehaviour
     {
+        public static DeviceAuthentication Instance { get; set; }
+
+        public bool DeviceAuthenticated { get; private set; }
+
         /// <summary>
         /// Authenticates our device with GameSparks. Once authenticated, we show the UI
         /// and load initial messages. 
         /// </summary>
         void Start()
         {
-
+            Instance = this;
             StartCoroutine(DelayAuthenticateRoutine());
         }
 
@@ -20,30 +24,21 @@
         {
 
             yield return new WaitForSeconds(1f);
-            Unity.Utilities.Console.Instance.Log("here", "lightblue");
+            XLogger.Info("开始授权....");
             new GameSparks.Api.Requests.DeviceAuthenticationRequest().Send((response) =>
             {
                 if (!response.HasErrors)
                 {
-                    Unity.Utilities.Console.Instance.Log("Device Authenticated...", "lightblue");
-                    Debug.Log("Device Authenticated...");
-
+                    XLogger.Info("授权成功!");
                     //tell message provider we have been authenticated
-                    ARMessageProvider.Instance.deviceAuthenticated = true;
-                    StartCoroutine(DelayLoadAllMessage());
+                    DeviceAuthenticated = true;
                 }
                 else
                 {
-                    Unity.Utilities.Console.Instance.Log("Error Authenticating Device...", "lightblue");
-                    Debug.Log("Error Authenticating Device...");
+                    XLogger.Info("授权失败!");
+
                 }
             });
-        }
-
-        IEnumerator DelayLoadAllMessage()
-        {
-            yield return new WaitForSeconds(1f);
-            MessageService.Instance.LoadAllMessageNotSet();
         }
     }
 }

@@ -9,7 +9,7 @@
     public class UIBehavior : MonoBehaviour
     {
         /// <summary>
-        /// This class houses functions that get called when buttons are pressed 
+        /// This class houses functions that get called when buttons are pressed
         /// in the UI.
         /// </summary>
         private static UIBehavior _instance;
@@ -35,7 +35,7 @@
         {
             HomeScreen.SetActive(false);
             MessageService.Instance.RemoveAllMessages();
-            ARMessageProvider.Instance.RemoveCurrentMessages();
+            ARMessageProvider.Instance.RemoveAllMessages();
             StartCoroutine(DelayRemoveRoutine());
         }
 
@@ -55,13 +55,13 @@
         {
             double lat = ARMessageProvider.Instance.deviceLocation.CurrentLocation.LatitudeLongitude.x;
             double lon = ARMessageProvider.Instance.deviceLocation.CurrentLocation.LatitudeLongitude.y;
-            Console.Instance.Log("上传 ---> 经度：" + lon + " 纬度：" + lat + " 消息:" + messageText.text, "lightblue");
+            XLogger.Info("上传 ---> 经度：" + lon + " 纬度：" + lat + " 消息:" + messageText.text);
             MessageService.Instance.SaveMessage(lat, lon, messageText.text);
 
             messageText.text = "";
             HomeScreen.SetActive(true);
             MessageScreen.SetActive(false);
-            StartCoroutine(DelayLoadMessagesRoutine());
+            // StartCoroutine(DelayLoadMessagesRoutine());
         }
 
         IEnumerator DelayLoadMessagesRoutine()

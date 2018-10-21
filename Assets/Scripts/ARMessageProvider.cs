@@ -1,105 +1,137 @@
 ﻿namespace Mapbox.Unity.Ar
 {
-	using System.Collections;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using Mapbox.Unity.Utilities;
-	using Mapbox.Utils;
-	using Mapbox.Unity.Map;
+  using System.Collections;
+  using System.Collections.Generic;
+  using UnityEngine;
+  using Mapbox.Unity.Utilities;
+  using Mapbox.Utils;
+  using Mapbox.Unity.Map;
+  using Model;
 
-	public class ARMessageProvider : MonoBehaviour {
-		/// <summary>
-		/// This loads messages according to GPS coordinates, removes messages, and repositions messages
-		/// within the scene. 
-		/// </summary>
-		private static ARMessageProvider _instance;
-		public static ARMessageProvider Instance { get { return _instance; } }
+  public class ARMessageProvider : MonoBehaviour
+  {
+    public static ARMessageProvider Instance { get; private set; }
 
-		[SerializeField]
-		private AbstractMap _map;
 
-		[HideInInspector]
-		public List<GameObject> currentMessages = new List<GameObject>();
-		[HideInInspector]
-		public bool deviceAuthenticated = false;
-		private bool gotInitialAlignment = false;
 
-		public Mapbox.Unity.Location.DeviceLocationProvider deviceLocation;
+    [SerializeField]
+    private AbstractMap _map;
 
-		void Awake(){
-			_instance = this;
-		}
+    [HideInInspector]
+    private List<LocationMessage> locationMessages = new List<LocationMessage>();
 
-		public void GotAlignment(){
-            Debug.Log("alignment");
-            Unity.Utilities.Console.Instance.Log("alignment", "lightblue");
+    [HideInInspector]
+    public List<GameObject> currentMessages = new List<GameObject>();
+    [HideInInspector]
+    public bool deviceAuthenticated;
+    private bool gotInitialAlignment;
 
-            if (deviceAuthenticated){
-				if (!gotInitialAlignment) {
-					gotInitialAlignment = true;
-					//set UI active once we are authenticated
-					UIBehavior.Instance.ShowUI ();
-					//load first messages
-					MessageService.Instance.LoadAllMessages ();
-					Unity.Utilities.Console.Instance.Log("Loading UI and initial messages!", "lightblue");
-				} else {
-					UpdateARMessageLocations (deviceLocation.CurrentLocation.LatitudeLongitude);
-					Unity.Utilities.Console.Instance.Log("Repositioning messages!", "lightblue");
-				}
-			} else {
-				Debug.Log ("Got Alignment---DEVICE NOT AUTHENTICATED!");
-			}
-		}
+    public Mapbox.Unity.Location.DeviceLocationProvider deviceLocation;
 
-		public void RemoveCurrentMessages(){
-			foreach (GameObject messageObject in currentMessages) {
-				Destroy (messageObject);
-			}
-			currentMessages.Clear ();
-		}
+    void Awake()
+    {
+      Instance = this;
+    }
 
-		public void LoadARMessages(List<GameObject> messageObjectList){
-			StartCoroutine (LoadARMessagesRoutine (messageObjectList));
-		}
+    private void _removeAllMessages()
+    {
+      foreach (LocationMessage locationMessage in locationMessages)
+      {
+        Destroy(locationMessage.Parent);
+      }
+      locationMessages.Clear();
+    }
 
-		//this placed initial messages after they are loaded in from gamesparks
-		IEnumerator LoadARMessagesRoutine(List<GameObject> messageObjectList){
 
-			RemoveCurrentMessages ();
+    private IEnumerator _showARMessages(List<LocationMessage> messages)
+    {
+      yield return new WaitForSeconds(2f);
 
-			yield return new WaitForSeconds(2f);
+      foreach (LocationMessage message in messages)
+      {
+        _showARMessage(message);
+      }
+    }
 
-			foreach (GameObject messageObject in messageObjectList) {
+    private void _showARMessage(LocationMessage message)
+    {
+      Vector3 _targetPosition = _map.Root.TransformPoint(Conversions.GeoToWorldPosition(message.Latitude, message.Longitude, _map.CenterMercator, _map.WorldRelativeScale).ToVector3xz());
+      Message msg = message.Parent.GetComponent<Message>();
+      msg.SetText(message.Text);
+      msg.transform.position = _targetPosition;
+    }
 
-				Message thisMessage = messageObject.GetComponent<Message> ();
+    public void ShowAllMessages()
+    {
+      StartCoroutine(_showARMessages(locationMessages));
+    }
 
-				Vector3 _targetPosition =_map.Root.TransformPoint(Conversions.GeoToWorldPosition(thisMessage.latitude,thisMessage.longitude, _map.CenterMercator, _map.WorldRelativeScale).ToVector3xz()); 
+    public void RemoveAllMessages()
+    {
+      _removeAllMessages();
+    }
 
-				Debug.Log ("~~~~TARGET POSITION: " + _targetPosition);
+    public void SetMessages(List<LocationMessage> messages)
+    {
+      locationMessages = messages;
+    }
 
-				messageObject.transform.position = _targetPosition;
-				messageObject.GetComponent<Message> ().SetText (thisMessage.text);
-				//add to list so we can update positions later
-				currentMessages.Add(messageObject);
-			}
-		}
-		//this repositions messages everytime our location is updated
-		public void UpdateARMessageLocations(Vector2d currentLocation){
+    public void AddMessage(LocationMessage message)
+    {
+      locationMessages.Add(message);
+      _showARMessage(message);
+    }
 
-			if (currentMessages.Count > 0) {
+    public void UpdateCurrentLocation(Vector2d currentLocation)
+    {
+      if (locationMessages.Count > 0)
+      {
+        foreach (LocationMessage locationMessage in locationMessages)
+        {
+          Vector3 _targetPosition = _map.Root.TransformPoint(Conversions.GeoToWorldPosition(locationMessage.Latitude, locationMessage.Longitude, _map.CenterMercator, _map.WorldRelativeScale).ToVector3xz());
+          locationMessage.Parent.GetComponent<Message>().transform.position = _targetPosition;
+        }
+      }
+    }
 
-				Debug.Log ("Repositioning Messages...");
+    /// <summary>
+    /// Gots the alignment.
+    /// </summary>
+    public void GotAlignment()
+    {
+      XLogger.Info("对齐成功!");
 
-				foreach (GameObject messageObject in currentMessages) {
+      if (DeviceAuthentication.Instance.DeviceAuthenticated)
+      {
+        if (!gotInitialAlignment)
+        {
+          XLogger.Info("开始初始化UI和消息....");
+          gotInitialAlignment = true;
+          //set UI active once we are authenticated
+          UIBehavior.Instance.ShowUI();
+          //load first messages
+          MessageService.Instance.LoadAllMessages();
+        }
+        else
+        {
+          XLogger.Info("更新信息位置....");
+          UpdateCurrentLocation(deviceLocation.CurrentLocation.LatitudeLongitude);
+        }
+      }
+      else
+      {
+        XLogger.Error("设备未授权");
+      }
+    }
 
-					Message message = messageObject.GetComponent<Message> ();
-
-					Vector3 _targetPosition =_map.Root.TransformPoint(Conversions.GeoToWorldPosition(message.latitude,message.longitude, _map.CenterMercator, _map.WorldRelativeScale).ToVector3xz()); 
-
-					messageObject.transform.position = _targetPosition;
-				}
-			}
-		}
-	}
+    public void RemoveCurrentMessages()
+    {
+      foreach (GameObject messageObject in currentMessages)
+      {
+        Destroy(messageObject);
+      }
+      currentMessages.Clear();
+    }
+  }
 }
 
